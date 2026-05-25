@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Lady | إتمام الطلب</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .checkout-page { min-height: 100vh; padding: 100px 20px 60px; background: var(--bg); }
+        .checkout-container { max-width: 900px; margin: 0 auto; }
+        .checkout-title { text-align: center; font-size: 2rem; font-weight: 900; color: var(--primary-dark); margin-bottom: 30px; }
+        .checkout-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 25px; }
+        .checkout-card { background: #1a1a1a; border: 1px solid rgba(201, 169, 110, 0.12); border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); }
+        .checkout-card h3 { font-size: 1.2rem; color: var(--primary); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-lighter); }
+        .checkout-item { display: flex; gap: 12px; padding: 12px; background: var(--bg-alt); border-radius: 12px; margin-bottom: 10px; align-items: center; }
+        .checkout-item img { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; background: #222; padding: 4px; }
+        .checkout-item-info { flex: 1; }
+        .checkout-item-info h4 { font-size: 0.95rem; margin-bottom: 3px; }
+        .checkout-item-info .item-brand, .checkout-item-info .item-size { display: block; font-size: 0.8rem; color: var(--text-light); }
+        .checkout-item-qty { display: flex; align-items: center; gap: 0; border: 2px solid var(--primary-light); border-radius: 20px; overflow: hidden; }
+        .checkout-item-qty button { width: 28px; height: 28px; border: none; background: var(--primary-lighter); color: var(--primary); font-weight: 700; cursor: pointer; font-size: 1rem; transition: var(--transition); }
+        .checkout-item-qty button:hover { background: var(--primary); color: #0d0d0d; }
+        .checkout-item-qty span { min-width: 28px; text-align: center; font-weight: 700; font-size: 0.9rem; }
+        .checkout-item-price { font-weight: 700; color: var(--primary); min-width: 60px; text-align: center; }
+        .checkout-item-remove { background: none; border: none; color: #ef4444; font-size: 1.2rem; cursor: pointer; opacity: 0.6; transition: var(--transition); }
+        .checkout-item-remove:hover { opacity: 1; }
+        .summary-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #2b2b2b; font-size: 0.95rem; }
+        .summary-row.total { border-bottom: none; padding-top: 15px; font-size: 1.3rem; font-weight: 900; color: var(--primary-dark); }
+        .summary-row .label { color: var(--text-light); }
+        .delivery-options { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
+        .delivery-option { display: flex; align-items: center; gap: 12px; padding: 15px; border: 2px solid var(--primary-light); border-radius: 12px; cursor: pointer; transition: var(--transition); }
+        .delivery-option:hover { border-color: var(--primary); background: var(--primary-lighter); }
+        .delivery-option.selected { border-color: var(--primary); background: var(--primary-lighter); }
+        .delivery-option .radio-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--primary-light); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .delivery-option.selected .radio-dot { border-color: var(--primary); }
+        .delivery-option.selected .radio-dot::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+        .delivery-option-info h4 { font-size: 0.95rem; }
+        .delivery-option-info p { font-size: 0.8rem; color: var(--text-light); margin-top: 2px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px 16px; border: 2px solid #333; border-radius: 10px; font-family: 'Tajawal', sans-serif; font-size: 0.95rem; transition: var(--transition); background: #222; color: var(--text); }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(201,169,110,0.15); }
+        .btn-whatsapp-order { width: 100%; padding: 14px; background: #25d366; color: white; border: none; border-radius: 12px; font-family: 'Tajawal', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: var(--transition); margin-top: 10px; text-decoration: none; display: block; text-align: center; }
+        .btn-whatsapp-order:hover { background: #1da851; }
+        .btn-whatsapp-order:disabled { opacity: 0.6; cursor: wait; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--primary); text-decoration: none; font-weight: 600; }
+        .back-link:hover { text-decoration: underline; }
+        .empty-checkout { text-align: center; padding: 60px; background: #1a1a1a; border: 1px solid rgba(201, 169, 110, 0.12); border-radius: var(--radius); box-shadow: var(--shadow); }
+        .empty-checkout span { font-size: 3rem; display: block; margin-bottom: 15px; color: var(--primary); }
+        .empty-checkout p { color: var(--text-light); margin-bottom: 20px; }
+        .empty-checkout a { display: inline-block; padding: 12px 30px; background: var(--primary); color: #0d0d0d; text-decoration: none; border-radius: 25px; font-weight: 700; }
+        .region-options { display: flex; gap: 10px; flex-wrap: wrap; }
+        .region-option { flex: 1; min-width: 80px; padding: 12px 16px; border: 2px solid var(--primary-light); border-radius: 12px; cursor: pointer; text-align: center; transition: var(--transition); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .region-option:hover { border-color: var(--primary); background: var(--primary-lighter); }
+        .region-option.selected { border-color: var(--primary); background: var(--primary-lighter); }
+        .region-option span:first-child { font-weight: 700; font-size: 0.95rem; }
+        .region-cost { font-size: 0.85rem; color: var(--primary); font-weight: 600; }
+        .checkout-status { text-align: center; margin-bottom: 18px; color: var(--text-light); font-weight: 600; }
+        .checkout-status.error { color: #b91c1c; }
+        @media (max-width: 768px) { .checkout-grid { grid-template-columns: 1fr; } .checkout-page { padding: 80px 15px 40px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container" style="justify-content: space-between;">
+            <a href="index.html" class="logo"><span class="logo-text" style="font-size:1rem;">Elegant Lady</span></a>
+            <a href="index.html" style="color: var(--primary-dark); text-decoration: none; font-weight: 600; font-size: 0.95rem; white-space: nowrap; padding: 8px 20px; margin-left: 10px;">← الرئيسية</a>
+        </div>
+    </nav>
+
+    <div class="checkout-page">
+        <div class="checkout-container">
+            <a href="index.html" class="back-link">→ العودة للتسوق</a>
+            <h1 class="checkout-title">إتمام الطلب</h1>
+            <p class="checkout-status" id="checkoutStatus">جاري تحميل بيانات الطلب...</p>
+            <div id="checkoutContent"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="data.js"></script>
+    <script>
+        const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2216%22 fill=%22%231a1a1a%22/%3E%3Ctext x=%2250%22 y=%2257%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23c9a96e%22%3EIMG%3C/text%3E%3C/svg%3E";
+        let products = [];
+        let discounts = normalizeDiscounts(DEFAULT_DISCOUNTS);
+        let siteSettings = normalizeSettings(DEFAULT_SITE_SETTINGS);
+        let cart = normalizeCartItems(JSON.parse(localStorage.getItem('elegantlady_cart') || '[]'), products);
+        let selectedDelivery = localStorage.getItem('elegantlady_delivery_method') || 'pickup';
+        let selectedRegion = '';
+
+        const DELIVERY_COSTS = { westbank: 20, jerusalem: 30, inside: 50 };
+        const DELIVERY_LABELS = { westbank: 'الضفة', jerusalem: 'القدس', inside: 'الداخل' };
+
+        document.addEventListener('DOMContentLoaded', initializeCheckout);
+
+        async function initializeCheckout() {
+            // Render immediately with local data
+            cart = normalizeCartItems(JSON.parse(localStorage.getItem('elegantlady_cart') || '[]'), products);
+            saveCart();
+            render();
+            setStatus('');
+
+            // Then try to upgrade with Firestore data
+            if (window.db) {
+                try {
+                    var fetchDone = false;
+                    var timeout = setTimeout(function () {
+                        if (!fetchDone) console.log('Firestore fetch timed out, using local data');
+                    }, 5000);
+
+                    const [productsSnap, discountsSnap, settingsSnap] = await Promise.all([
+                        db.collection('products').get(),
+                        db.collection('discounts').get(),
+                        db.collection('settings').doc('config').get()
+                    ]);
+                    fetchDone = true;
+                    clearTimeout(timeout);
+
+                    if (!productsSnap.empty) {
+                        products = productsSnap.docs.map(function (docSnap) { return normalizeProduct(docSnap.data()); }).sort(function (a, b) { return a.id - b.id; });
+                    }
+                    discounts = discountsSnap.docs.map(function (docSnap) { return normalizeDiscount(docSnap.data()); });
+                    siteSettings = normalizeSettings(settingsSnap.exists ? settingsSnap.data() : DEFAULT_SITE_SETTINGS);
+                    cart = normalizeCartItems(JSON.parse(localStorage.getItem('elegantlady_cart') || '[]'), products);
+                    saveCart();
+                    render();
+                } catch (error) {
+                    console.error('Firestore fetch error:', error);
+                }
+            }
+        }
+
+        function setStatus(message, type) {
+            const status = document.getElementById('checkoutStatus');
+            if (!status) return;
+            status.textContent = message;
+            status.className = 'checkout-status' + (type ? ' ' + type : '');
+            status.style.display = message ? 'block' : 'none';
+        }
+
+        function render() {
+            const container = document.getElementById('checkoutContent');
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="empty-checkout"><span>•</span><p>السلة فارغة! أضيفي منتجات أولاً</p><a href="index.html">تسوقي الآن</a></div>';
+                return;
+            }
+
+            const itemsHTML = cart.map(function (item) {
+                const product = products.find(function (entry) { return entry.id === item.id; });
+                if (!product) return '';
+                const sizeData = getSizeData(product, item.sizeIdx);
+                const pricing = getFinalPrice(product, item.sizeIdx, discounts);
+                const lineTotal = pricing.final * item.qty;
+                return '<div class="checkout-item"><img src="' + product.image + '" alt="' + product.name + '" onerror="this.src=\'' + FALLBACK_IMAGE + '\'"><div class="checkout-item-info"><h4>' + product.name + '</h4><span class="item-brand">' + product.brand + '</span><span class="item-size">' + getSizeLabel(sizeData) + '</span></div><div class="checkout-item-qty"><button onclick="changeQty(' + item.id + ', ' + item.sizeIdx + ', -1)">−</button><span>' + item.qty + '</span><button onclick="changeQty(' + item.id + ', ' + item.sizeIdx + ', 1)">+</button></div><div class="checkout-item-price">' + formatCurrency(lineTotal) + '</div><button class="checkout-item-remove" onclick="removeItem(' + item.id + ', ' + item.sizeIdx + ')">✕</button></div>';
+            }).join('');
+
+            const subtotal = getSubtotal();
+            const itemCount = cart.reduce(function (sum, item) { return sum + item.qty; }, 0);
+            container.innerHTML = `
+                <div class="checkout-grid">
+                    <div>
+                        <div class="checkout-card">
+                            <h3>المنتجات (${itemCount} قطعة)</h3>
+                            ${itemsHTML}
+                        </div>
+                        <div class="checkout-card" style="margin-top:20px;">
+                            <h3>طريقة الاستلام</h3>
+                            <div class="delivery-options">
+                                <div class="delivery-option ${selectedDelivery === 'pickup' ? 'selected' : ''}" onclick="selectDelivery('pickup')">
+                                    <div class="radio-dot"></div>
+                                    <div class="delivery-option-info">
+                                        <h4>استلام من رام الله (مجاني)</h4>
+                                        <p>استلمي طلبك من المحل في رام الله بدون تكلفة إضافية</p>
+                                    </div>
+                                </div>
+                                <div class="delivery-option ${selectedDelivery === 'delivery' ? 'selected' : ''}" onclick="selectDelivery('delivery')">
+                                    <div class="radio-dot"></div>
+                                    <div class="delivery-option-info">
+                                        <h4>توصيل للعنوان</h4>
+                                        <p>توصيل لجميع مناطق الضفة، القدس، والداخل</p>
+                                    </div>
+                                </div>
+                            </div>
+                            ${selectedDelivery === 'delivery' ? `
+                                <div class="delivery-regions" style="margin-top:15px;">
+                                    <h4 style="margin-bottom:10px; font-size:0.95rem;">اختاري المنطقة:</h4>
+                                    <div class="region-options">
+                                        <div class="region-option ${selectedRegion === 'westbank' ? 'selected' : ''}" onclick="selectRegion('westbank')"><span>الضفة</span><span class="region-cost">₪20</span></div>
+                                        <div class="region-option ${selectedRegion === 'jerusalem' ? 'selected' : ''}" onclick="selectRegion('jerusalem')"><span>القدس</span><span class="region-cost">₪30</span></div>
+                                        <div class="region-option ${selectedRegion === 'inside' ? 'selected' : ''}" onclick="selectRegion('inside')"><span>الداخل</span><span class="region-cost">₪50</span></div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="checkout-card" style="margin-top:20px;">
+                            <h3>معلومات التواصل</h3>
+                            <div class="form-group"><label>الاسم</label><input type="text" id="custName" placeholder="اسمك الكريم" required></div>
+                            <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="custPhone" placeholder="05xxxxxxxx" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
+                            <div class="form-group" id="addressGroup" style="${selectedDelivery === 'pickup' ? 'display:none' : ''}"><label>العنوان (المدينة + تفاصيل)</label><textarea id="custAddress" rows="2" placeholder="المدينة، الحي، الشارع..."></textarea></div>
+                            <div class="form-group"><label>ملاحظات إضافية (اختياري)</label><textarea id="custNotes" rows="2" placeholder="أي ملاحظات على الطلب..."></textarea></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="checkout-card" style="position:sticky; top:80px;">
+                            <h3>ملخص الطلب</h3>
+                            <div class="summary-row"><span class="label">عدد المنتجات:</span><span>${itemCount} قطعة</span></div>
+                            <div class="summary-row"><span class="label">المجموع الفرعي:</span><span>${formatCurrency(subtotal)}</span></div>
+                            <div class="summary-row"><span class="label">التوصيل:</span><span>${getDeliveryCostLabel()}</span></div>
+                            <div class="summary-row total"><span>المجموع:</span><span>${formatCurrency(getTotal())}</span></div>
+                            <button type="button" class="btn-whatsapp-order" id="confirmOrderBtn" onclick="confirmOrder()">تأكيد الطلب عبر واتساب</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getSubtotal() {
+            return cart.reduce(function (sum, item) {
+                const product = products.find(function (entry) { return entry.id === item.id; });
+                return product ? sum + getFinalPrice(product, item.sizeIdx, discounts).final * item.qty : sum;
+            }, 0);
+        }
+
+        function changeQty(productId, sizeIdx, delta) {
+            const item = cart.find(function (entry) { return entry.id === productId && entry.sizeIdx === sizeIdx; });
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty < 1) return removeItem(productId, sizeIdx);
+            saveCart();
+            render();
+        }
+
+        function removeItem(productId, sizeIdx) {
+            cart = cart.filter(function (entry) { return !(entry.id === productId && entry.sizeIdx === sizeIdx); });
+            saveCart();
+            render();
+        }
+
+        function saveCart() {
+            localStorage.setItem('elegantlady_cart', JSON.stringify(normalizeCartItems(cart, products)));
+        }
+
+        function selectDelivery(method) {
+            var formData = getFormValues();
+            selectedDelivery = method;
+            if (method === 'pickup') selectedRegion = '';
+            localStorage.setItem('elegantlady_delivery_method', method);
+            render();
+            restoreFormValues(formData);
+        }
+
+        function selectRegion(region) {
+            var formData = getFormValues();
+            selectedRegion = region;
+            render();
+            restoreFormValues(formData);
+        }
+
+        function getFormValues() {
+            return {
+                name: (document.getElementById('custName') || {}).value || '',
+                phone: (document.getElementById('custPhone') || {}).value || '',
+                address: (document.getElementById('custAddress') || {}).value || '',
+                notes: (document.getElementById('custNotes') || {}).value || ''
+            };
+        }
+
+        function restoreFormValues(data) {
+            var name = document.getElementById('custName');
+            var phone = document.getElementById('custPhone');
+            var address = document.getElementById('custAddress');
+            var notes = document.getElementById('custNotes');
+            if (name) name.value = data.name;
+            if (phone) phone.value = data.phone;
+            if (address) address.value = data.address;
+            if (notes) notes.value = data.notes;
+        }
+
+        function getDeliveryCost() {
+            return selectedDelivery === 'pickup' ? 0 : (DELIVERY_COSTS[selectedRegion] || 0);
+        }
+
+        function getDeliveryCostLabel() {
+            if (selectedDelivery === 'pickup') return 'مجاني (استلام)';
+            if (!selectedRegion) return 'اختاري المنطقة';
+            return formatCurrency(getDeliveryCost()) + ' (' + DELIVERY_LABELS[selectedRegion] + ')';
+        }
+
+        function getTotal() {
+            return getSubtotal() + getDeliveryCost();
+        }
+
+        function buildOrder() {
+            const customerName = document.getElementById('custName').value.trim();
+            const customerPhone = document.getElementById('custPhone').value.trim();
+            const address = document.getElementById('custAddress') ? document.getElementById('custAddress').value.trim() : '';
+            const notes = document.getElementById('custNotes').value.trim();
+            const subtotal = getSubtotal();
+            const deliveryCost = getDeliveryCost();
+            const total = subtotal + deliveryCost;
+            const id = makeOrderId();
+            return {
+                id: id,
+                items: cart.map(function (item) {
+                    const product = products.find(function (entry) { return entry.id === item.id; });
+                    const sizeData = getSizeData(product, item.sizeIdx);
+                    const pricing = getFinalPrice(product, item.sizeIdx, discounts);
+                    return {
+                        productId: product.id,
+                        name: product.name,
+                        brand: product.brand,
+                        sizeIdx: item.sizeIdx,
+                        sizeLabel: getSizeLabel(sizeData),
+                        qty: item.qty,
+                        price: pricing.final,
+                        lineTotal: pricing.final * item.qty
+                    };
+                }),
+                customerName: customerName,
+                customerPhone: customerPhone,
+                address: address,
+                notes: notes,
+                delivery: selectedDelivery,
+                region: selectedDelivery === 'delivery' ? selectedRegion : 'pickup',
+                deliveryCost: deliveryCost,
+                subtotal: subtotal,
+                total: total,
+                date: new Date().toISOString(),
+                status: 'new'
+            };
+        }
+
+        function buildWhatsAppMessage(order) {
+            const itemsText = order.items.map(function (item, index) {
+                return (index + 1) + '. ' + item.name + ' (' + item.sizeLabel + ')\n   السعر: ' + item.price + ' شيكل × ' + item.qty + ' = ' + item.lineTotal + ' شيكل';
+            }).join('\n');
+            const shippingText = order.delivery === 'pickup' ? 'مجاني (استلام من رام الله)' : formatCurrency(order.deliveryCost) + ' (' + DELIVERY_LABELS[order.region] + ')';
+            const deliveryLabel = order.delivery === 'pickup' ? 'استلام من رام الله' : 'توصيل إلى ' + DELIVERY_LABELS[order.region] + ': ' + order.address;
+            let msg = 'مرحبا، طلب جديد (' + order.id + '):\n';
+            msg += 'ـــــــــــــــــــــــــــ\n';
+            msg += 'الاسم: ' + order.customerName + '\n';
+            msg += 'الهاتف: ' + order.customerPhone + '\n';
+            msg += 'ـــــــــــــــــــــــــــ\n';
+            msg += 'المنتجات:\n\n' + itemsText + '\n';
+            msg += 'ـــــــــــــــــــــــــــ\n';
+            msg += 'المجموع: ' + order.subtotal + ' شيكل\n';
+            msg += 'الشحن: ' + shippingText + '\n';
+            msg += 'الإجمالي النهائي: ' + order.total + ' شيكل\n';
+            msg += 'ـــــــــــــــــــــــــــ\n';
+            msg += 'الاستلام: ' + deliveryLabel + '\n';
+            if (order.notes) msg += 'ملاحظات: ' + order.notes + '\n';
+            return msg;
+        }
+
+        async function confirmOrder() {
+            const customerName = document.getElementById('custName').value.trim();
+            const customerPhone = document.getElementById('custPhone').value.trim();
+            if (!customerName || !customerPhone) return alert('الرجاء إدخال الاسم ورقم الهاتف');
+            if (customerPhone.length < 9 || customerPhone.length > 14) return alert('رقم الهاتف غير صحيح');
+            if (selectedDelivery === 'delivery') {
+                if (!selectedRegion) return alert('الرجاء اختيار المنطقة');
+                const address = document.getElementById('custAddress').value.trim();
+                if (!address) return alert('الرجاء إدخال عنوان التوصيل');
+            }
+
+            const button = document.getElementById('confirmOrderBtn');
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'جاري حفظ الطلب...';
+
+            try {
+                const order = buildOrder();
+                if (window.db) {
+                    await db.collection('orders').doc(order.id).set(order);
+                }
+                localStorage.setItem('elegantlady_last_order', JSON.stringify(order));
+                localStorage.setItem('elegantlady_cart', '[]');
+                const whatsappUrl = buildWhatsAppUrl(siteSettings.whatsappNumber, buildWhatsAppMessage(order));
+                window.location.href = whatsappUrl;
+            } catch (error) {
+                console.error(error);
+                alert('تعذر حفظ الطلب حالياً، حاولي مرة أخرى.');
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+
+        // When user returns from WhatsApp, redirect to confirmation
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                var btn = document.getElementById('confirmOrderBtn');
+                if (btn && btn.disabled) {
+                    var lastOrder = localStorage.getItem('elegantlady_last_order');
+                    if (lastOrder) {
+                        window.location.href = 'confirmation.html';
+                    } else {
+                        btn.disabled = false;
+                        btn.textContent = 'تأكيد الطلب عبر واتساب';
+                    }
+                }
+            }
+        });
+
+        // Also handle bfcache restore (pageshow event)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                var lastOrder = localStorage.getItem('elegantlady_last_order');
+                var cartEmpty = !JSON.parse(localStorage.getItem('elegantlady_cart') || '[]').length;
+                if (lastOrder && cartEmpty) {
+                    window.location.href = 'confirmation.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
