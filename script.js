@@ -141,6 +141,7 @@ function syncCartWithProducts() {
 function renderStorefront() {
     applySettings();
     renderFilters();
+    renderBrands();
     checkDiscountBanner();
     updateCartBadge();
     renderProducts(getFilteredProducts(currentFilter));
@@ -321,8 +322,12 @@ function renderFilters() {
 function renderBrands() {
     var grid = document.getElementById('brandsGrid');
     if (!grid) return;
-    grid.innerHTML = BRANDS_DATA.map(function (brand) {
-        return '<img src="' + brand.logo + '" alt="' + brand.name + '" class="brand-logo" title="' + brand.name + '" onerror="this.style.display=\'none\'">';
+    var brands = Array.from(new Set(products.map(function (p) { return p.brand; }))).filter(Boolean);
+    if (!brands.length) {
+        brands = BRANDS_DATA.map(function (b) { return b.name; });
+    }
+    grid.innerHTML = brands.map(function (name) {
+        return '<div class="brand-card" onclick="filterProducts(\'' + name.replace(/'/g, "\\'") + '\')"><span class="brand-name">' + name + '</span></div>';
     }).join('');
 }
 

@@ -20,10 +20,12 @@ const BRANDS_DATA = [
 ];
 
 function normalizeSizeEntry(entry) {
-    if (!entry) return { size: '', unit: 'ml', price: 0 };
+    if (!entry) return { size: '', unit: 'cm', price: 0 };
+    var u = String(entry.unit || 'cm').toLowerCase();
+    var validUnits = ['cm', 'g', 'ml'];
     return {
         size: String(entry.size || '').trim(),
-        unit: entry.unit === 'g' ? 'g' : 'ml',
+        unit: validUnits.indexOf(u) >= 0 ? u : 'cm',
         price: Number(entry.price) || 0
     };
 }
@@ -102,7 +104,9 @@ function getSizeData(product, sizeIdx) {
 }
 
 function getUnitLabel(unit) {
-    return unit === 'g' ? 'غرام' : 'مل';
+    if (unit === 'g') return 'غرام';
+    if (unit === 'cm') return 'سم';
+    return 'مل';
 }
 
 function getSizeLabel(sizeData) {
